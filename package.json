@@ -91,10 +91,6 @@
     "react": "*",
     "react-native": "*"
   },
-  "workspaces": [
-    "example"
-  ],
-  "packageManager": "yarn@3.6.1",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
@@ -186,5 +182,6 @@
     "type": "legacy-module",
     "languages": "kotlin-swift",
     "version": "0.48.5"
-  }
+  },
+   "packageManager": "yarn@1.22.22"
 }
