@@ -187,7 +187,7 @@ class GoogleAcmModule(reactContext: ReactApplicationContext) :
   suspend fun handleSignOut() {
     val activity: Activity? = currentActivity
     if (activity == null) {
-      throw GetCredentialException()
+      throw Exception()
       //promise.reject("E_NO_ACTIVITY", "Current activity is null, cannot launch UI.")
       return
     }
