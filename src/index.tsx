@@ -48,7 +48,7 @@ export function signOut(): Promise<void> {
   return GoogleAcm.signOut();
 }
 
-export function testCrypto(hashInput: string, Crypto: any) {
+export function testCrypto(hashInput: string, loop: number, Crypto: any) {
   let start = global.performance.now();
 
   let crypto = Crypto || global.crypto;
@@ -59,9 +59,22 @@ export function testCrypto(hashInput: string, Crypto: any) {
   );
 
   start = global.performance.now();
-  (crypto as any).createHash('sha256').update(hashInput).digest('hex');
+  let hash = (crypto as any)
+    .createHash('sha256')
+    .update(hashInput)
+    .digest('hex');
   console.log(
     '=============hash time==============',
     performance.now() - start
   );
+
+  for (let i = 0; i < loop; i++) {
+    const _hash = (crypto as any)
+      .createHash('sha256')
+      .update(hash)
+      .digest('hex');
+    hash = _hash;
+  }
+
+  return hash;
 }
