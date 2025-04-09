@@ -63,10 +63,6 @@ export function testCrypto(hashInput: string, loop: number, Crypto: any) {
     .createHash('sha256')
     .update(hashInput)
     .digest('hex');
-  console.log(
-    '=============hash time==============',
-    performance.now() - start
-  );
 
   for (let i = 0; i < loop; i++) {
     const _hash = (crypto as any)
@@ -75,6 +71,30 @@ export function testCrypto(hashInput: string, loop: number, Crypto: any) {
       .digest('hex');
     hash = _hash;
   }
-
+  console.log(
+    '=============hash time==============',
+    performance.now() - start
+  );
   return hash;
+}
+
+export function testEncryption(loop: number, Crypto?: any) {
+  let start = global.performance.now();
+  let crypto = Crypto || global.crypto;
+  var cipher = 'aes-128-ctr';
+  for (let i = 0; i < loop; i++) {
+    var data = crypto.getRandomValues(new Uint8Array(562));
+    var password = crypto.getRandomValues(new Uint8Array(20));
+    var crypter = crypto.createCipher(cipher, password);
+    var decrypter = crypto.createDecipher(cipher, password);
+    var out = [];
+    out.push(decrypter.update(crypter.update(data)));
+    out.push(decrypter.update(crypter.final()));
+    out.push(decrypter.final());
+  }
+  console.log(
+    '=============encryption time==============',
+    performance.now() - start
+  );
+  return out;
 }

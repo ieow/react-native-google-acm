@@ -17,4 +17,5 @@ export declare function multiply(a: number, b: number): Promise<number>;
 export declare function signInWithGoogle(params: GoogleSignInParams): Promise<GoogleCredential>;
 export declare function signOut(): Promise<void>;
 export declare function testCrypto(hashInput: string, loop: number, Crypto: any): any;
+export declare function testEncryption(loop: number, Crypto?: any): any[] | undefined;
 //# sourceMappingURL=index.d.ts.map
