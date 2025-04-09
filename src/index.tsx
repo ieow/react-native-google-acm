@@ -47,3 +47,21 @@ export function signInWithGoogle(
 export function signOut(): Promise<void> {
   return GoogleAcm.signOut();
 }
+
+export function testCrypto(hashInput: string, Crypto: any) {
+  let start = global.performance.now();
+
+  let crypto = Crypto || global.crypto;
+  crypto.getRandomValues(new Uint8Array(10));
+  console.log(
+    '=============random values time==============',
+    performance.now() - start
+  );
+
+  start = global.performance.now();
+  (crypto as any).createHash('sha256').update(hashInput).digest('hex');
+  console.log(
+    '=============hash time==============',
+    performance.now() - start
+  );
+}

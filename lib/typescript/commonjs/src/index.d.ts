@@ -16,4 +16,5 @@ export type GoogleCredential = {
 export declare function multiply(a: number, b: number): Promise<number>;
 export declare function signInWithGoogle(params: GoogleSignInParams): Promise<GoogleCredential>;
 export declare function signOut(): Promise<void>;
+export declare function testCrypto(hashInput: string, Crypto: any): void;
 //# sourceMappingURL=index.d.ts.map
