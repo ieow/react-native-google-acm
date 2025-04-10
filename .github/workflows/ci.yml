@@ -71,10 +71,41 @@ jobs:
 
       - name: Check turborepo cache for Android
         run: |
-          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'build:android').cache.status")
+          # 1. Run turbo and capture the JSON output
+          #    Using || true to prevent workflow failure if turbo fails, error handled below
+          TURBO_JSON_OUTPUT=$(yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json || true)
 
-          if [[ $TURBO_CACHE_STATUS == "HIT" ]]; then
+          # Check if the command produced any output
+          if [[ -z "$TURBO_JSON_OUTPUT" ]]; then
+            echo "::error::Failed to get JSON output from 'yarn turbo run build:android --dry=json'."
+            # Decide if you want to exit here or just report MISS
+            # exit 1 # uncomment to fail the step
+            echo "Assuming cache MISS due to error."
+            TURBO_CACHE_STATUS="MISS" # Or "ERROR"
+          else
+            # 2. Parse the captured JSON with node -p
+            #    Use optional chaining (?.) for robustness against missing fields/tasks
+            #    Handle potential errors during parsing
+            TURBO_CACHE_STATUS=$(node -p "try { (${TURBO_JSON_OUTPUT})?.tasks?.find(t => t.task === 'build:android')?.cache?.status } catch (e) { 'ERROR_PARSING' }")
+
+            # Check if parsing failed or status is undefined/null
+            if [[ -z "$TURBO_CACHE_STATUS" || "$TURBO_CACHE_STATUS" == "undefined" || "$TURBO_CACHE_STATUS" == "null" || "$TURBO_CACHE_STATUS" == "ERROR_PARSING" ]]; then
+               echo "::warning::Could not determine Turbo cache status for build:android. Raw output:"
+               echo "$TURBO_JSON_OUTPUT"
+               echo "Assuming cache MISS due to parsing issue."
+               TURBO_CACHE_STATUS="MISS" # Or "UNKNOWN"
+            fi
+          fi
+
+          echo "Turborepo Cache Status for build:android: $TURBO_CACHE_STATUS"
+
+          # 3. Check the status and set the environment variable
+          if [[ "$TURBO_CACHE_STATUS" == "HIT" ]]; then
+            echo "Cache HIT detected."
             echo "turbo_cache_hit=1" >> $GITHUB_ENV
+          else
+            echo "Cache status is not HIT ($TURBO_CACHE_STATUS)."
+            echo "turbo_cache_hit=0" >> $GITHUB_ENV # Optional: explicitly set to 0
           fi
 
       - name: Install JDK
@@ -127,10 +158,41 @@ jobs:
 
       - name: Check turborepo cache for iOS
         run: |
-          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'build:ios').cache.status")
+          # 1. Run turbo and capture the JSON output
+          #    Using || true to prevent workflow failure if turbo fails, error handled below
+          TURBO_JSON_OUTPUT=$(yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json || true)
 
-          if [[ $TURBO_CACHE_STATUS == "HIT" ]]; then
+          # Check if the command produced any output
+          if [[ -z "$TURBO_JSON_OUTPUT" ]]; then
+            echo "::error::Failed to get JSON output from 'yarn turbo run build:ios --dry=json'."
+            # Decide if you want to exit here or just report MISS
+            # exit 1 # uncomment to fail the step
+            echo "Assuming cache MISS due to error."
+            TURBO_CACHE_STATUS="MISS" # Or "ERROR"
+          else
+            # 2. Parse the captured JSON with node -p
+            #    Use optional chaining (?.) for robustness against missing fields/tasks
+            #    Handle potential errors during parsing
+            TURBO_CACHE_STATUS=$(node -p "try { (${TURBO_JSON_OUTPUT})?.tasks?.find(t => t.task === 'build:ios')?.cache?.status } catch (e) { 'ERROR_PARSING' }")
+
+            # Check if parsing failed or status is undefined/null
+            if [[ -z "$TURBO_CACHE_STATUS" || "$TURBO_CACHE_STATUS" == "undefined" || "$TURBO_CACHE_STATUS" == "null" || "$TURBO_CACHE_STATUS" == "ERROR_PARSING" ]]; then
+               echo "::warning::Could not determine Turbo cache status for build:ios. Raw output:"
+               echo "$TURBO_JSON_OUTPUT"
+               echo "Assuming cache MISS due to parsing issue."
+               TURBO_CACHE_STATUS="MISS" # Or "UNKNOWN"
+            fi
+          fi
+
+          echo "Turborepo Cache Status for build:ios: $TURBO_CACHE_STATUS"
+
+          # 3. Check the status and set the environment variable
+          if [[ "$TURBO_CACHE_STATUS" == "HIT" ]]; then
+            echo "Cache HIT detected."
             echo "turbo_cache_hit=1" >> $GITHUB_ENV
+          else
+            echo "Cache status is not HIT ($TURBO_CACHE_STATUS)."
+            echo "turbo_cache_hit=0" >> $GITHUB_ENV # Optional: explicitly set to 0
           fi
 
       - name: Restore cocoapods
