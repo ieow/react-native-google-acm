@@ -132,21 +132,6 @@ class GoogleAcmModule(reactContext: ReactApplicationContext) :
     Log.d("CredentialManager", "Handle results called")
 
     return when (credential) {
-      is PublicKeyCredential -> {
-        val cred = result.credential as PublicKeyCredential
-        Arguments.createMap().apply {
-          putString("type", "passkey")
-          putString("authenticationResponseJson", cred.authenticationResponseJson)
-        }
-      }
-      is PasswordCredential -> {
-        val cred = result.credential as PasswordCredential
-        Arguments.createMap().apply {
-          putString("type", "password")
-          putString("username", cred.id)
-          putString("password", cred.password)
-        }
-      }
       // GoogleIdToken credential
       is CustomCredential -> {
         if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
