@@ -7,7 +7,7 @@ class GoogleAcm: NSObject {
   }
 
 
-  @objc(signInWithGoogle:withB:withResolver:withRejecter:)
+  @objc(signInWithGoogle:withResolver:withRejecter:)
   func signInWithGoogle(params: NSDictionary, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
 
     guard let rootViewController = UIApplication.shared.windows.first?.rootViewController else {
@@ -41,7 +41,7 @@ class GoogleAcm: NSObject {
   }
 
   @objc(signOut:withResolver:withRejecter:)
-  func signOut(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+  func signOut( a: Float, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
     resolve(nil)
   }
 
