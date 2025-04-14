@@ -34,10 +34,6 @@ export type GoogleCredential = {
   phoneNumber?: string;
 };
 
-export function multiply(a: number, b: number): Promise<number> {
-  return GoogleAcm.multiply(a, b);
-}
-
 export function signInWithGoogle(
   params: GoogleSignInParams
 ): Promise<GoogleCredential> {
